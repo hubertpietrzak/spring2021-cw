@@ -15,7 +15,6 @@ class DbTaskRepository implements TaskRepository {
         this.entityManager = entityManager;
     }
 
-    @Transactional
     @Override
     public Task save(Task task) {
         task.setId(nextId);

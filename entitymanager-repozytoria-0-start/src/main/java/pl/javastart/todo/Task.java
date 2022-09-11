@@ -1,14 +1,21 @@
 package pl.javastart.todo;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+@Entity
 class Task {
+    @Id
     private Long id;
     private String title;
     private String description;
     private int priority;
     private LocalDateTime startTime;
     private LocalDateTime completionTime;
+
+    public Task() {
+    }
 
     public Task(String title, String description, int priority) {
         this.title = title;

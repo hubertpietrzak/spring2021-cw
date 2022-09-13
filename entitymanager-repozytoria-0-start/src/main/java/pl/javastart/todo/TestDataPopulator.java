@@ -1,28 +1,22 @@
 package pl.javastart.todo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import pl.javastart.todo.dto.NewTaskDto;
 
-import java.util.Scanner;
+import javax.annotation.PostConstruct;
 
-@SpringBootApplication
-public class TodoApplication {
+@Service
+@Profile("dev")
+class TestDataPopulator {
+    private TaskService taskService;
 
-    public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(TodoApplication.class, args);
-        TaskController taskController = context.getBean(TaskController.class);
-        taskController.loop();
+    public TestDataPopulator(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    @Bean
-    Scanner scanner() {
-        return new Scanner(System.in);
-    }
-
-    private static void populateTestData(TaskService taskService) {
+    @PostConstruct
+    void populateTestData() {
         taskService.saveTask(new NewTaskDto("Nauka Springa", "Nauczyć się obsługiwać bazy danych w Springu", 90));
         taskService.saveTask(new NewTaskDto("Poprawić budżet domowy", "Sprawdzić arkusz, który błędnie liczy budżet domowy", 50));
         taskService.saveTask(new NewTaskDto("Auto do mechanika", "Umówić i zawieźć auto do mechanika na przegląd", 80));
@@ -33,5 +27,4 @@ public class TodoApplication {
         taskService.startTask(3L);
         taskService.completeTask(3L);
     }
-
 }

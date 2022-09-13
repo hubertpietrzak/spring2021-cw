@@ -15,6 +15,7 @@ import java.util.Scanner;
 class TaskController {
     private final TaskService taskService;
     private final Scanner scanner;
+
     public TaskController(TaskService taskService, Scanner scanner) {
         this.taskService = taskService;
         this.scanner = scanner;
@@ -47,6 +48,8 @@ class TaskController {
             switch (option) {
                 case ADD -> addTask();
                 case PRINT_SINGLE -> printTask();
+                case PRINT_UNSTARTED -> printUnstartedTasks();
+                case PRINT_COMPLETED -> printCompletedTasks();
                 case START_TASK -> startTask();
                 case COMPLETE_TASK -> completeTask();
                 case EXIT -> exit();
@@ -67,6 +70,27 @@ class TaskController {
         NewTaskDto task = new NewTaskDto(title, description, priority);
         Long savedTaskId = taskService.saveTask(task);
         System.out.println("Zadanie zapisane z identyfikatorem " + savedTaskId);
+    }
+
+    private void printTask() {
+        System.out.println("Podaj identyfikator zadania:");
+        long taskId = scanner.nextLong();
+        scanner.nextLine();
+        taskService.getTaskInfo(taskId)
+                .ifPresentOrElse(
+                        System.out::println,
+                        () -> System.out.println("Brak wpisu o takim id")
+                );
+    }
+
+    private void printUnstartedTasks() {
+        taskService.getAllNotStartedTasksInfo()
+                .forEach(System.out::println);
+    }
+
+    private void printCompletedTasks() {
+        taskService.getAllCompletedTasksInfo()
+                .forEach(System.out::println);
     }
 
     private void startTask() {
@@ -95,17 +119,6 @@ class TaskController {
         }
     }
 
-    private void printTask() {
-        System.out.println("Podaj identyfikator zadania:");
-        long taskId = scanner.nextLong();
-        scanner.nextLine();
-        taskService.getTaskInfo(taskId)
-                .ifPresentOrElse(
-                        System.out::println,
-                        () -> System.out.println("Brak wpisu o takim id")
-                );
-    }
-
     private void exit() {
         System.out.println("Koniec programu!");
     }
@@ -113,9 +126,11 @@ class TaskController {
     private enum Option {
         ADD(1, "Dodaj nowe zadanie"),
         PRINT_SINGLE(2, "Wyświetl zadanie"),
-        START_TASK(3, "Wystartuj zadanie"),
-        COMPLETE_TASK(4, "Zakończ zadanie"),
-        EXIT(5, "Koniec programu");
+        PRINT_UNSTARTED(3, "Wyświetl nierozpoczęte zadania"),
+        PRINT_COMPLETED(4, "Wyświetl zakończone zadania"),
+        START_TASK(5, "Wystartuj zadanie"),
+        COMPLETE_TASK(6, "Zakończ zadanie"),
+        EXIT(7, "Koniec programu");
 
         private final int number;
         private final String name;
